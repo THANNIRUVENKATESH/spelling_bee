@@ -1,0 +1,526 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spelling Bee</title>
+    <link rel="icon" href="{% static 'images/bee-left.png' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #fff9d0 0%, #ffd3b0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+    
+        .home-container {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .title {
+            font-size: 4rem;
+            color: #ff6b6b;
+            text-shadow: 3px 3px 0 #fff;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            font-size: 1.5rem;
+            padding: 0.7rem 1.3rem;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            width: 50%; /* Set width to 50% */
+            
+            display: block; /* changed to block */
+            margin: 5px auto; /* Auto margin on left and right to center */
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+        }
+
+        .btn-primary {
+            background: #ffd700;
+            color: #333;
+            border: 2px solid #ffd700;
+        }
+
+        .btn-primary:hover {
+            background: #e6c100;
+            border-color: #e6c100;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+            border: 2px solid #4CAF50;
+        }
+
+        .btn-success:hover {
+            background: #45a049;
+            border-color: #45a049;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-danger {
+            background-color: #ff6b6b;
+            color: white;
+            border: 2px solid #ff6b6b;
+        }
+
+        .btn-danger:hover {
+            background-color: #ff5252;
+            border-color: #ff5252;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            color: white;
+        }
+
+        .bee-image {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            animation: bounce 3s ease-in-out infinite;
+        }
+
+        .bee-image.left {
+            left: 5%;
+            top: 15%;
+            animation-delay: 0.5s;
+        }
+
+        .bee-image.right {
+            right: 5%;
+            bottom: 15%;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: white;
+            margin: 15% auto;
+            padding: 25px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        @keyframes bounce {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-30px);
+            }
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Enhanced Menu Styles */
+        .menu-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 2rem;
+            color: #ff6b6b;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .menu {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            width: 350px;
+            text-align: left;
+            animation: slideIn 0.3s ease-in-out;
+        }
+
+        .menu.show {
+            display: block;
+        }
+
+        .menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu li {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s ease;
+        }
+
+        .menu li:last-child {
+            border-bottom: none;
+        }
+
+        .menu li:hover {
+            background-color: #f9f9f9;
+        }
+
+        .menu-header {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .voice-selector {
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .voice-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .voice-selector select {
+            width: 100%;
+            padding: 2px 4px;
+            border-radius: 5px;
+            border: 2px solid #ffd700;
+            background-color: white;
+            font-size: 1rem;
+            appearance: none;
+            }
+
+        .voice-preview-button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px;
+            font-size: 0.8rem;
+            transition: background-color 0.2s ease;
+            display: block; /* Make it a block-level element */
+            margin-left: auto; /* Auto margin on left */
+            margin-right: auto; /* Auto margin on right */
+            width: fit-content; /* Adjust width to content */
+        }
+
+        .voice-preview-button:hover {
+            background-color: #1976D2;
+        }
+
+        .auth-button {
+    display: block;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.login-button {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.login-button:hover {
+    background-color: #45a049;
+}
+
+.logout-button {
+    background-color: #ff6b6b;
+    color: white;
+}
+
+.logout-button:hover {
+    background-color: #ff5252;
+}
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .btn {
+                font-size: 0.8rem;
+                padding: 0.5rem 1rem;
+                min-width: 100px;
+            }
+
+            .bee-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .bee-image.left {
+                left: 2%;
+                top: 5%;
+            }
+
+            .bee-image.right {
+                right: 2%;
+                bottom: 5%;
+            }
+
+            .menu-icon {
+                font-size: 1.5rem;
+                top: 10px;
+                right: 10px;
+            }
+
+            .menu {
+                width: 300px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="home-container">
+        <h1 class="title">Spelling Bee</h1>
+
+        <div class="d-grid gap-2 col-12 mx-auto">
+            <a href="{% url 'gameplay' %}" class="btn btn-primary">Start Game</a>
+            <button class="btn btn-success" onclick="showInstructions()">Instructions</button>
+            <a href="{% url 'practice' %}" class="btn btn-success">Practice Mode</a>
+            <a href="{% url 'leaderboard' %}" class="btn btn-danger">Leaderboard 🏆</a>
+        </div>
+
+        <i class="fas fa-bars menu-icon" onclick="toggleMenu(event)"></i>
+
+        <div class="menu">
+            <ul>
+                <li class="menu-header" id="userGreeting">Hello, User!</li>
+                <li>
+                    <div class="voice-selector">
+                        <label>Select Voice:</label>
+                        <select id="voiceSelect"></select>
+                        <button class="voice-preview-button" onclick="playVoicePreview()">Hear Voice</button>
+                    </div>
+                </li>
+                <li><a href="#" class="auth-button" id="authButton" onclick="handleAuth()">Login</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="instructionsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideInstructions()">×</span>
+            <h3>How to Play</h3>
+            <ul>
+                <li>Select your preferred voice (in the top-right menu)</li>
+                <li>Click "Start Game" to begin</li>
+                <li>Listen to the word using the "Hear Word" button</li>
+                <li>Type the letters in the input boxes</li>
+                <li>Submit your answer before time runs out</li>
+                <li>Earn bonus points for quick answers!</li>
+            </ul>
+            <h3>Scoring System</h3>
+            <ul>
+                <li>Score below 30: ⭐ 0 Stars</li>
+                <li>Score between 30 - 70: ⭐ 1 Star</li>
+                <li>Score between 71 - 120: ⭐⭐ 2 Stars</li>
+                <li>Score above 120: ⭐⭐⭐ 3 Stars</li>
+            </ul>
+        </div>
+    </div>
+
+    <img src="{% static 'images/bee-left.png' %}" alt="Bee" class="bee-image left">
+    <img src="{% static 'images/bee.png' %}" alt="Bee" class="bee-image right">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const menu = document.querySelector('.menu');
+        const menuIcon = document.querySelector('.menu-icon'); // Select the menu icon
+        let voices = [];
+
+        function toggleMenu(event) {
+            event.stopPropagation();  // Prevent click from propagating to document
+
+            if (menu.classList.contains('show')) {
+                menu.classList.remove('show');
+            } else {
+                menu.classList.add('show');
+            }
+        }
+
+
+        function populateVoices() {
+            voices = window.speechSynthesis.getVoices();
+            const voiceSelect = document.getElementById('voiceSelect');
+
+            const englishVoices = voices
+        .filter(voice => voice.lang.startsWith('en'))
+        .slice(0, 6); // Limit to 6 voices
+
+    voiceSelect.innerHTML = englishVoices
+        .map(voice => {
+            const cleanName = voice.name
+                .replace(/( - English( \(.*\))?| English\b)/g, '')
+                .replace(/\(|\)/g, '');
+
+            return `<option value="${voice.voiceURI}">${cleanName}</option>`;
+        })
+        .join('');
+
+            const savedVoice = localStorage.getItem('selectedVoice');
+            if (savedVoice) {
+                voiceSelect.value = savedVoice;
+            }
+        }
+        function playVoicePreview() {
+            const voiceSelect = document.getElementById('voiceSelect');
+            const selectedVoiceURI = voiceSelect.value;
+            const voice = window.speechSynthesis.getVoices().find(v => v.voiceURI === selectedVoiceURI);
+
+            if (!voice) return;
+
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance();
+            utterance.voice = voice;
+            utterance.text = "Hello! Listen to this voice sample";
+            utterance.rate = 0.9;
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function checkAuthStatus() {
+        const token = localStorage.getItem('authToken');
+        const userName = localStorage.getItem('userName');
+        const userGreeting = document.getElementById('userGreeting');
+        const authButton = document.getElementById('authButton');
+
+            if (token && userName) {
+            // User is logged in
+                userGreeting.textContent = `Hello, ${userName}!`;
+                authButton.textContent = 'Logout';
+                authButton.classList.add('logout-button');
+                authButton.classList.remove('login-button');
+            } else {
+                // User is not logged in
+                userGreeting.textContent = 'Hello, User!';
+                authButton.textContent = 'Login';
+                authButton.classList.add('login-button');
+                authButton.classList.remove('logout-button');
+            }
+        }
+
+        function handleAuth() {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                // User is logged in, so log them out
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('userName');
+                checkAuthStatus();
+                // Optionally redirect to home page
+                window.location.href = '/spellingbee/';
+            } else {
+                // User is not logged in, redirect to login page
+                window.location.href = '/spellingbee/login/';
+            }
+        }
+        function showInstructions() {
+            document.getElementById('instructionsModal').style.display = 'block';
+        }
+        function hideInstructions() {
+            document.getElementById('instructionsModal').style.display = 'none';
+        }
+
+        const voiceSelect = document.getElementById('voiceSelect');
+        voiceSelect.addEventListener('change', (e) => {
+            localStorage.setItem('selectedVoice', e.target.value);
+            window.speechSynthesis.cancel();
+        });
+
+
+        window.speechSynthesis.onvoiceschanged = populateVoices;
+        setTimeout(populateVoices, 1000);
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const isClickInsideMenu = menu.contains(event.target);
+            const isClickOnMenuIcon = menuIcon.contains(event.target);
+            if (!isClickInsideMenu && !isClickOnMenuIcon && menu.classList.contains('show')) {
+                menu.classList.remove('show');
+            }
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+        });
+    </script>
+</body>
+</html>

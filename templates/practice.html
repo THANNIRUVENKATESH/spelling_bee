@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spell Bee - Practice Mode</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="title">Practice Mode</h1>
+        
+        <!-- <div class="difficulty-selector">
+            <button class="difficulty-btn" data-difficulty="easy">Easy</button>
+            <button class="difficulty-btn active" data-difficulty="medium">Medium</button>
+            <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+        </div> -->
+
+        <div class="score-board">Score: 0 🎯</div>
+        <div class="timer-container">
+            <div class="timer-text" id="timer">00:00</div>
+        </div>
+        
+        <div id="wordDisplay" class="word-display">
+            <input type="text" id="wordInput" class="word-input" autocomplete="off" spellcheck="false" readonly>
+        </div>
+
+        <div class="controls-container">
+            <div class="controls">
+                <button class="btn speak-btn" id="speakBtn">Hear Word</button>
+                <button class="btn" id="submitBtn">Check Answer</button>
+            </div>
+            <div class="controls">
+                <button class="btn next-btn" id="passBtn">Skip Word</button>
+                <button class="btn exit-btn" id="exitBtn">Exit</button>
+            </div>
+        </div>
+
+        <div class="feedback-message" id="feedbackMessage">
+            <span id="closeFeedback">×</span>
+        </div>
+    </div>
+    <script src="{% static 'js/practice.js' %}"></script>
+</body>
+</html>
